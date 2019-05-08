@@ -1,0 +1,35 @@
+version: "2"
+
+services:
+  movies:
+    build: ./movies-service
+    command: npm run start:dev
+    environment:
+      POSTGRES_DB: movies
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: 
+      - "3000:3000/tcp"
+    volumes:
+      - ./movies-service:/app
+
+  cinema:
+    build: ./cinema-app
+    command: npm run start:dev
+    ports: 
+      - "3005:3005"
+    environment:
+      MOVIES_HOST: 'movies'
+    volumes:
+      - ./cinema-app:/app
+    depends_on:
+      - movies
+
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: movies
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
